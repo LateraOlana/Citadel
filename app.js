@@ -413,12 +413,23 @@
       ? `in ${guesses.length} guess${guesses.length === 1 ? "" : "es"}`
       : fmtKm(last.distanceKm);
 
-    // Closest pill — shows the warmest guess so far (only meaningful with 2+)
-    if (guesses.length >= 2 && !isWin) {
+    // Closest pill — shows the warmest guess so far. After winning, that's
+    // the correct guess itself (distance ≈ 0).
+    if (isWin) {
+      const correctTier = WARMTH_TIERS[0]; // scorching at 0 km
+      pill.hidden = false;
+      pill.classList.add("win");
+      pill.style.setProperty("--warmth", "var(--w-correct)");
+      pill.style.setProperty("--warmth-glow", "rgba(6, 214, 160, .7)");
+      $("#closest-pill-lbl").textContent = "Found it";
+      $("#closest-pill-name").textContent = `${last.name} · 0 km 🎯`;
+    } else if (guesses.length >= 2) {
       const closestTier = warmthFor(closest.distanceKm);
       pill.hidden = false;
+      pill.classList.remove("win");
       pill.style.setProperty("--warmth", closestTier.color);
       pill.style.setProperty("--warmth-glow", closestTier.glow);
+      $("#closest-pill-lbl").textContent = "Closest so far";
       $("#closest-pill-name").textContent = `${closest.name} · ${fmtKm(closest.distanceKm)}`;
     } else {
       pill.hidden = true;
@@ -714,7 +725,7 @@
       : "Come back tomorrow for a new citadel.";
 
     setTimeout(() => {
-      $("#win-modal").hidden = false;
+      openModal("#win-modal");
       runConfetti(2200);
     }, 700);
   }
@@ -814,18 +825,32 @@
   }
 
   // ---------- Modals ----------
-  function openModal(id) { $(id).hidden = false; }
-  function closeModal(id) { $(id).hidden = true; }
+  function openModal(id) {
+    $(id).hidden = false;
+    document.body.classList.add("modal-open");
+  }
+  function closeModal(id) {
+    $(id).hidden = true;
+    if ($$(".modal:not([hidden])").length === 0) {
+      document.body.classList.remove("modal-open");
+    }
+  }
   function bindModalClosers() {
     document.addEventListener("click", e => {
-      if (e.target.matches("[data-close]")) {
-        const m = e.target.closest(".modal");
-        if (m) m.hidden = true;
+      const closer = e.target.closest("[data-close]");
+      if (!closer) return;
+      const m = closer.closest(".modal");
+      if (m) {
+        m.hidden = true;
+        if ($$(".modal:not([hidden])").length === 0) {
+          document.body.classList.remove("modal-open");
+        }
       }
     });
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") {
         $$(".modal:not([hidden])").forEach(m => m.hidden = true);
+        document.body.classList.remove("modal-open");
       }
     });
   }
@@ -942,7 +967,7 @@
 
     // Show how-to on first visit
     if (!safeStorage.getItem("citadel:visited")) {
-      $("#how-modal").hidden = false;
+      openModal("#how-modal");
       safeStorage.setItem("citadel:visited", "1");
     }
 
@@ -1004,7 +1029,7 @@
 
     $("#share-btn").addEventListener("click", shareResult);
     $("#play-again-btn").addEventListener("click", () => {
-      $("#win-modal").hidden = true;
+      closeModal("#win-modal");
       startFreePlay();
     });
 

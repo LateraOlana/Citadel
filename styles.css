@@ -4,12 +4,12 @@
    ============================================================ */
 
 :root {
-  /* Palette */
-  --night-1: #0a0f24;
-  --night-2: #0e1530;
-  --night-3: #14204a;
-  --indigo: #1a2660;
-  --indigo-soft: #2a3680;
+  /* Palette — brightened for daylight phone use while keeping night-theme feel */
+  --night-1: #1a2454;          /* was #0a0f24 — far too dark on phones in daylight */
+  --night-2: #1f2a5e;          /* was #0e1530 */
+  --night-3: #2a3680;          /* was #14204a */
+  --indigo: #3543a0;
+  --indigo-soft: #4858bd;
   --gold: #ffd166;
   --gold-deep: #f0a500;
   --coral: #ef476f;
@@ -17,24 +17,29 @@
   --rose: #ff5c8a;
 
   /* Warmth scale (cold → blazing) */
-  --w-cold:    #4a90e2;
-  --w-cool:    #8e9aaf;
+  --w-cold:    #5aa8ff;        /* was #4a90e2 — slightly brighter */
+  --w-cool:    #a8b4c8;        /* was #8e9aaf — slightly brighter */
   --w-warm:    #ffd166;
   --w-hot:     #ef476f;
   --w-blazing: #ff2a4d;
   --w-correct: #06d6a0;
 
   /* Surfaces */
-  --paper: rgba(255, 248, 231, .96);
+  --paper: rgba(255, 248, 231, .98);
   --ink: #1a1814;
   --ink-2: #4a4538;
   --ink-mute: #7a7058;
-  --rule: rgba(255, 248, 231, .12);
+  --rule: rgba(255, 248, 231, .18);
 
-  /* Glass cards on the night background */
-  --card-bg: rgba(20, 32, 74, .55);
-  --card-border: rgba(255, 248, 231, .14);
-  --card-bg-strong: rgba(20, 32, 74, .82);
+  /* Glass cards: more opaque for high readability in sunlight */
+  --card-bg: rgba(30, 42, 90, .85);          /* was .55 */
+  --card-border: rgba(255, 248, 231, .22);   /* was .14 */
+  --card-bg-strong: rgba(30, 42, 90, .94);   /* was .82 */
+
+  /* Text colors with better contrast */
+  --text-bright: #ffffff;                    /* main text */
+  --text-soft: rgba(255, 250, 240, .85);     /* secondary */
+  --text-mute: rgba(255, 248, 231, .88);     /* tertiary, was .55-.65 */
 
   /* Type */
   --display: "Fraunces", Georgia, serif;
@@ -55,7 +60,7 @@ h1, h2, h3, p { margin: 0; }
 
 html, body {
   background: var(--night-1);
-  color: #fff8e7;
+  color: #fffaf0;
   font-family: var(--body);
   font-size: 15px;
   line-height: 1.5;
@@ -67,8 +72,8 @@ html, body {
 
 body {
   background:
-    radial-gradient(1400px 700px at 80% -10%, #2a1f5c 0%, transparent 55%),
-    radial-gradient(1100px 800px at -10% 120%, #1a2660 0%, transparent 50%),
+    radial-gradient(1400px 700px at 80% -10%, #4a3a8c 0%, transparent 55%),
+    radial-gradient(1100px 800px at -10% 120%, #2c3a90 0%, transparent 50%),
     linear-gradient(180deg, var(--night-1) 0%, var(--night-2) 100%);
   position: relative;
 }
@@ -84,9 +89,9 @@ body {
 }
 .stars-1 {
   background-image: radial-gradient(1px 1px at 20% 30%, rgba(255,248,231,.7) 50%, transparent),
-                    radial-gradient(1px 1px at 70% 60%, rgba(255,248,231,.5) 50%, transparent),
+                    radial-gradient(1px 1px at 70% 60%, rgba(255,248,231,.7) 50%, transparent),
                     radial-gradient(1.5px 1.5px at 40% 80%, rgba(255,248,231,.6) 50%, transparent),
-                    radial-gradient(1px 1px at 85% 20%, rgba(255,248,231,.4) 50%, transparent);
+                    radial-gradient(1px 1px at 85% 20%, rgba(255,248,231,.65) 50%, transparent);
   background-size: 200px 200px;
   animation: drift-slow 120s linear infinite;
 }
@@ -139,7 +144,7 @@ body {
   font-variation-settings: "opsz" 144;
 }
 .tagline {
-  font-size: 12.5px; color: rgba(255,248,231,.65);
+  font-size: 12.5px; color: rgba(255,248,231,.85);
   margin-top: 4px; letter-spacing: .01em;
 }
 
@@ -219,7 +224,7 @@ body {
   display: flex; align-items: center; gap: 8px;
   font-family: var(--mono); font-size: 11px;
   letter-spacing: .12em; text-transform: uppercase;
-  color: rgba(255, 248, 231, .55);
+  color: rgba(255, 248, 231, .78);
 }
 .puzzle-meta .dot { opacity: .5; }
 .puzzle-mode-badge {
@@ -294,14 +299,14 @@ body {
   filter: drop-shadow(0 0 4px rgba(255, 209, 102, .4));
 }
 .suggestion-country {
-  color: rgba(255, 248, 231, .55); font-size: 12px;
+  color: rgba(255, 248, 231, .78); font-size: 12px;
 }
 .suggestion.used {
   opacity: .4; text-decoration: line-through;
   text-decoration-color: rgba(255, 248, 231, .4);
 }
 .suggestion-empty {
-  padding: 14px; color: rgba(255, 248, 231, .55);
+  padding: 14px; color: rgba(255, 248, 231, .78);
   font-size: 13px; text-align: center; font-style: italic;
 }
 
@@ -339,7 +344,7 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   gap: 10px; flex-wrap: wrap;
   font-family: var(--mono); font-size: 12px;
-  color: rgba(255, 248, 231, .65);
+  color: rgba(255, 248, 231, .85);
   letter-spacing: .04em;
 }
 .status-counter { display: inline-flex; align-items: baseline; gap: 6px; }
@@ -385,7 +390,7 @@ body {
 .closest-pill-lbl {
   font-family: var(--mono); font-size: 9px;
   letter-spacing: .14em; text-transform: uppercase;
-  color: rgba(255, 248, 231, .55);
+  color: rgba(255, 248, 231, .78);
 }
 .closest-pill-name {
   font-family: var(--body); font-size: 12.5px;
@@ -428,7 +433,7 @@ body {
   background: #fff8e7;
   border: 2px solid var(--night-1);
   border-radius: 50%;
-  box-shadow: 0 0 12px rgba(255, 248, 231, .6),
+  box-shadow: 0 0 12px rgba(255, 248, 231, .82),
               0 2px 4px rgba(0,0,0,.4);
   transition: left .9s var(--ease-out-back),
               background .4s var(--ease),
@@ -439,7 +444,7 @@ body {
   display: flex; justify-content: space-between; align-items: center;
   font-family: var(--mono); font-size: 10px;
   letter-spacing: .08em;
-  color: rgba(255, 248, 231, .55);
+  color: rgba(255, 248, 231, .78);
 }
 .prox-lbl-cold { color: var(--w-cold); }
 .prox-lbl-hot { font-size: 14px; }
@@ -492,7 +497,7 @@ body {
 }
 .warmth-banner-distance {
   font-family: var(--mono); font-size: 11px;
-  color: rgba(255, 248, 231, .65);
+  color: rgba(255, 248, 231, .85);
   letter-spacing: .04em;
 }
 
@@ -515,7 +520,7 @@ body {
 }
 .guess-list-sort {
   font-family: var(--mono); font-size: 10px;
-  color: rgba(255, 248, 231, .45);
+  color: rgba(255, 248, 231, .68);
   letter-spacing: .12em; text-transform: uppercase;
 }
 
@@ -531,7 +536,7 @@ body {
 }
 .leaflet-control-attribution {
   background: rgba(20, 32, 74, .85) !important;
-  color: rgba(255, 248, 231, .55) !important;
+  color: rgba(255, 248, 231, .78) !important;
   font-size: 9.5px !important;
   border-radius: 4px !important;
 }
@@ -565,7 +570,7 @@ body {
 .cardinal {
   position: absolute;
   font-family: var(--mono); font-size: 10px;
-  color: rgba(255, 248, 231, .6);
+  color: rgba(255, 248, 231, .82);
   font-weight: 500;
 }
 .cardinal-n { top: 5px; }
@@ -636,7 +641,7 @@ body {
 }
 .guess-num {
   font-family: var(--mono); font-size: 11px;
-  color: rgba(255, 248, 231, .45);
+  color: rgba(255, 248, 231, .68);
   text-align: center;
 }
 .guess-info { min-width: 0; }
@@ -646,7 +651,7 @@ body {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .guess-country {
-  font-size: 11.5px; color: rgba(255, 248, 231, .55);
+  font-size: 11.5px; color: rgba(255, 248, 231, .78);
   font-family: var(--mono);
   margin-top: 1px;
 }
@@ -663,7 +668,7 @@ body {
 }
 .guess-distance {
   font-family: var(--mono); font-size: 11px;
-  color: rgba(255, 248, 231, .65);
+  color: rgba(255, 248, 231, .85);
   letter-spacing: .02em;
 }
 .guess-item.is-closest:not(.correct) {
@@ -795,9 +800,21 @@ body {
   100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
+/* When any modal is open, fade map overlays so they don't compete with the modal.
+   The body class is toggled by JS in openModal/closeModal. */
+body.modal-open .compass,
+body.modal-open .warmth-banner {
+  opacity: .15;
+  pointer-events: none;
+  transition: opacity .25s var(--ease);
+}
+.compass, .warmth-banner {
+  transition: opacity .25s var(--ease);
+}
+
 /* =================== MODAL =================== */
 .modal {
-  position: fixed; inset: 0; z-index: 100;
+  position: fixed; inset: 0; z-index: 300;
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
 }
@@ -903,7 +920,7 @@ body {
 .win-stat-lbl {
   display: block;
   font-family: var(--mono); font-size: 10px;
-  color: rgba(255, 248, 231, .55);
+  color: rgba(255, 248, 231, .78);
   letter-spacing: .12em; text-transform: uppercase;
   margin-top: 2px;
 }
@@ -981,7 +998,7 @@ body {
 .stats-lbl {
   display: block;
   font-family: var(--mono); font-size: 10px;
-  color: rgba(255, 248, 231, .55);
+  color: rgba(255, 248, 231, .78);
   letter-spacing: .12em; text-transform: uppercase;
   margin-top: 2px;
 }
@@ -991,7 +1008,7 @@ body {
 #confetti {
   position: fixed; inset: 0;
   pointer-events: none;
-  z-index: 99;
+  z-index: 350;
 }
 
 /* =================== TOAST =================== */
@@ -1010,7 +1027,7 @@ body {
   box-shadow: 0 14px 36px -8px rgba(0, 0, 0, .6);
   opacity: 0; pointer-events: none;
   transition: opacity .25s, transform .25s var(--ease-out-back);
-  z-index: 200;
+  z-index: 400;
   max-width: calc(100vw - 40px);
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
