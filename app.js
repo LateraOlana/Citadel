@@ -231,11 +231,12 @@
     toast._t = setTimeout(() => el.classList.remove("show"), 2200);
   }
 
-  /** No-labels dark tile layer: clean coastlines, country borders, no text.
-   *  This makes guessing fair (you can't read the city name from the map). */
+  /** Light no-labels tile layer: clean coastlines, country borders, no text.
+   *  Light tiles read clearly on a phone screen in daylight, which dark tiles
+   *  do not. Pin colors (warm-to-cold) still pop against the soft background. */
   function addBaseTiles() {
     return L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",
+      "https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png",
       {
         maxZoom: 18,
         minZoom: 2,
