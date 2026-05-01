@@ -111,11 +111,12 @@ body {
 .topbar {
   position: relative; z-index: 2;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 18px clamp(16px, 4vw, 32px);
-  max-width: 1200px; margin: 0 auto;
+  padding: 24px clamp(20px, 4vw, 40px) 8px;
+  max-width: 1240px; margin: 0 auto;
+  gap: 16px;
 }
 .brand {
-  display: flex; align-items: center; gap: 14px;
+  display: flex; align-items: center; gap: 16px;
 }
 .brand-mark {
   filter: drop-shadow(0 4px 18px rgba(255, 209, 102, .35));
@@ -139,10 +140,10 @@ body {
 }
 .tagline {
   font-size: 12.5px; color: rgba(255,248,231,.65);
-  margin-top: 2px; letter-spacing: .01em;
+  margin-top: 4px; letter-spacing: .01em;
 }
 
-.topbar-actions { display: flex; gap: 4px; }
+.topbar-actions { display: flex; gap: 6px; }
 .icon-btn {
   background: rgba(255, 248, 231, .06);
   border: 1px solid rgba(255, 248, 231, .12);
@@ -162,16 +163,16 @@ body {
 /* =================== MAIN LAYOUT =================== */
 .main {
   position: relative; z-index: 1;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 12px clamp(16px, 4vw, 32px) 60px;
+  padding: 20px clamp(20px, 4vw, 40px) 80px;
   display: grid;
-  grid-template-columns: 1fr 1.7fr;
+  grid-template-columns: minmax(320px, 1fr) minmax(0, 1.7fr);
   grid-template-rows: auto auto;
-  gap: 18px;
+  gap: 24px;
 }
 @media (max-width: 900px) {
-  .main { grid-template-columns: 1fr; }
+  .main { grid-template-columns: 1fr; gap: 18px; padding-bottom: 60px; }
 }
 
 .game-card {
@@ -181,8 +182,8 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--card-border);
   border-radius: 18px;
-  padding: 22px 22px 20px;
-  display: flex; flex-direction: column; gap: 14px;
+  padding: 26px 26px 22px;
+  display: flex; flex-direction: column; gap: 18px;
 }
 .map-card {
   grid-column: 2; grid-row: 1 / span 2;
@@ -193,8 +194,8 @@ body {
   border: 1px solid var(--card-border);
   border-radius: 18px;
   overflow: hidden;
-  min-height: 460px;
-  height: clamp(460px, 70vh, 720px);
+  min-height: 520px;
+  height: clamp(520px, 76vh, 760px);
 }
 .guess-list-card {
   grid-column: 1; grid-row: 2;
@@ -203,14 +204,14 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--card-border);
   border-radius: 18px;
-  padding: 18px 22px 22px;
-  max-height: 480px;
+  padding: 22px 26px 24px;
+  max-height: 520px;
   overflow-y: auto;
 }
 @media (max-width: 900px) {
-  .game-card  { grid-column: 1; grid-row: 1; }
-  .map-card   { grid-column: 1; grid-row: 2; height: 56vh; min-height: 380px; }
-  .guess-list-card { grid-column: 1; grid-row: 3; max-height: none; }
+  .game-card  { grid-column: 1; grid-row: 1; padding: 22px; }
+  .map-card   { grid-column: 1; grid-row: 2; height: 60vh; min-height: 420px; }
+  .guess-list-card { grid-column: 1; grid-row: 3; max-height: none; padding: 20px 22px 22px; }
 }
 
 /* =================== GAME CARD =================== */
@@ -286,6 +287,11 @@ body {
 }
 .suggestion-city {
   color: #fff8e7; font-weight: 500; font-size: 14px;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.suggestion-capital {
+  color: var(--gold); font-size: 11px;
+  filter: drop-shadow(0 0 4px rgba(255, 209, 102, .4));
 }
 .suggestion-country {
   color: rgba(255, 248, 231, .55); font-size: 12px;
@@ -330,7 +336,8 @@ body {
 }
 
 .status-row {
-  display: flex; align-items: baseline; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; flex-wrap: wrap;
   font-family: var(--mono); font-size: 12px;
   color: rgba(255, 248, 231, .65);
   letter-spacing: .04em;
@@ -345,20 +352,182 @@ body {
 .status-num.bump { transform: scale(1.18); }
 .status-lbl { text-transform: uppercase; letter-spacing: .12em; font-size: 10.5px; }
 
+/* Closest-so-far pill */
+.closest-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 12px 5px 6px;
+  background: rgba(255, 248, 231, .08);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  max-width: 100%;
+  animation: pop-in .4s var(--ease-out-back);
+}
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+.closest-pill-warmth {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--warmth, var(--w-cool));
+  box-shadow: 0 0 12px var(--warmth-glow, rgba(142, 154, 175, .4));
+  flex-shrink: 0;
+  animation: warmth-pulse 2s ease-in-out infinite;
+}
+@keyframes warmth-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+.closest-pill-text {
+  display: flex; flex-direction: column; line-height: 1.15;
+  min-width: 0;
+}
+.closest-pill-lbl {
+  font-family: var(--mono); font-size: 9px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255, 248, 231, .55);
+}
+.closest-pill-name {
+  font-family: var(--body); font-size: 12.5px;
+  font-weight: 500; color: #fff8e7;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* =================== PROXIMITY METER =================== */
+.proximity {
+  display: flex; flex-direction: column; gap: 5px;
+  padding-top: 4px;
+}
+.proximity-track {
+  position: relative;
+  height: 8px;
+  background: linear-gradient(90deg,
+    var(--w-cold) 0%,
+    var(--w-cool) 25%,
+    var(--w-warm) 55%,
+    var(--w-hot) 80%,
+    var(--w-blazing) 100%);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+}
+.proximity-fill {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 32, 74, .65);
+  width: 100%;
+  transform-origin: right;
+  transform: scaleX(1);
+  transition: transform .9s var(--ease-out-back);
+}
+.proximity-marker {
+  position: absolute;
+  top: 50%; left: 0;
+  transform: translate(-50%, -50%);
+  width: 14px; height: 14px;
+  background: #fff8e7;
+  border: 2px solid var(--night-1);
+  border-radius: 50%;
+  box-shadow: 0 0 12px rgba(255, 248, 231, .6),
+              0 2px 4px rgba(0,0,0,.4);
+  transition: left .9s var(--ease-out-back),
+              background .4s var(--ease),
+              box-shadow .4s var(--ease);
+  z-index: 2;
+}
+.proximity-labels {
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .08em;
+  color: rgba(255, 248, 231, .55);
+}
+.prox-lbl-cold { color: var(--w-cold); }
+.prox-lbl-hot { font-size: 14px; }
+.prox-pct {
+  color: var(--gold);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: .04em;
+  transition: color .4s;
+}
+
+/* =================== WARMTH BANNER =================== */
+.warmth-banner {
+  position: absolute;
+  top: 16px; left: 16px;
+  z-index: 10;
+  pointer-events: none;
+  animation: banner-in .4s var(--ease-out-back);
+}
+@keyframes banner-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.warmth-banner-inner {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px 8px 10px;
+  background: rgba(20, 32, 74, .85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--card-border);
+  border-left: 4px solid var(--warmth, var(--w-cool));
+  border-radius: 12px;
+  box-shadow: 0 8px 30px -8px rgba(0,0,0,.5),
+              0 0 24px var(--warmth-glow, rgba(142,154,175,.3));
+  transition: border-color .4s, box-shadow .4s;
+}
+.warmth-banner-emoji {
+  font-size: 22px;
+  filter: drop-shadow(0 0 6px var(--warmth-glow, rgba(255,209,102,.5)));
+}
+.warmth-banner-text {
+  display: flex; flex-direction: column;
+  line-height: 1.1;
+}
+.warmth-banner-label {
+  font-family: var(--display); font-weight: 700;
+  font-size: 16px;
+  font-variation-settings: "opsz" 24;
+  color: var(--warmth, #fff8e7);
+}
+.warmth-banner-distance {
+  font-family: var(--mono); font-size: 11px;
+  color: rgba(255, 248, 231, .65);
+  letter-spacing: .04em;
+}
+
+/* When you find it, the banner becomes a victory celebration */
+.warmth-banner.win .warmth-banner-inner {
+  border-left-color: var(--w-correct);
+  box-shadow: 0 0 0 2px rgba(6, 214, 160, .4),
+              0 0 30px rgba(6, 214, 160, .6);
+  animation: banner-win 1.4s var(--ease-out-back);
+}
+@keyframes banner-win {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.08); }
+}
+
+/* =================== GUESS LIST =================== */
+.guess-list-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.guess-list-sort {
+  font-family: var(--mono); font-size: 10px;
+  color: rgba(255, 248, 231, .45);
+  letter-spacing: .12em; text-transform: uppercase;
+}
+
 /* =================== MAP =================== */
 #map {
   position: absolute; inset: 0;
   background: #0a0f24;
 }
-/* Leaflet-tile darkening: overlay a multiply layer on the map for night theme */
-.leaflet-tile-pane {
-  filter: hue-rotate(180deg) invert(.92) saturate(.7) contrast(.95);
-}
-/* Don't invert markers/popups */
-.leaflet-marker-pane,
-.leaflet-popup-pane,
-.leaflet-overlay-pane {
-  filter: none;
+/* Native dark CartoDB tiles ship label-free — no filter needed. We explicitly
+   hide the tooltip pane just in case any tile-level label markers leak through. */
+.leaflet-tooltip-pane {
+  display: none !important;
 }
 .leaflet-control-attribution {
   background: rgba(20, 32, 74, .85) !important;
@@ -439,10 +608,10 @@ body {
   font-variation-settings: "opsz" 24;
 }
 .guess-list {
-  display: flex; flex-direction: column; gap: 8px;
+  display: flex; flex-direction: column; gap: 10px;
 }
 .guess-empty {
-  padding: 22px 16px;
+  padding: 28px 18px;
   text-align: center;
   font-style: italic;
   color: rgba(255, 248, 231, .5);
@@ -452,9 +621,9 @@ body {
 }
 .guess-item {
   display: grid;
-  grid-template-columns: 28px 1fr auto;
-  align-items: center; gap: 10px;
-  padding: 10px 12px;
+  grid-template-columns: 32px 1fr auto;
+  align-items: center; gap: 12px;
+  padding: 12px 14px;
   background: rgba(255, 248, 231, .04);
   border: 1px solid rgba(255, 248, 231, .08);
   border-left: 3px solid var(--warmth, var(--w-cool));
@@ -496,6 +665,26 @@ body {
   font-family: var(--mono); font-size: 11px;
   color: rgba(255, 248, 231, .65);
   letter-spacing: .02em;
+}
+.guess-item.is-closest:not(.correct) {
+  background: linear-gradient(90deg, rgba(255, 209, 102, .12), rgba(255, 209, 102, .03));
+  border-color: var(--warmth, var(--w-warm));
+  box-shadow: 0 0 0 1px var(--warmth, var(--w-warm));
+}
+.guess-item.is-closest .guess-info::after {
+  content: "warmest";
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 7px;
+  background: var(--warmth, var(--w-warm));
+  color: var(--night-1);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  vertical-align: 1px;
 }
 .guess-item.correct {
   background: linear-gradient(90deg, rgba(6, 214, 160, .25), rgba(6, 214, 160, .05));
@@ -541,6 +730,30 @@ body {
   animation: pin-pulse 2s ease-out infinite;
 }
 .pin.correct .pin-pulse { animation-duration: 1s; }
+
+/* Star badge above the closest non-correct pin (the "warmest" guess so far) */
+.pin.is-closest .pin-dot {
+  border-color: var(--gold);
+  box-shadow:
+    0 0 0 2px var(--gold),
+    0 4px 12px rgba(0,0,0,.5),
+    0 0 22px var(--pin-glow, rgba(255, 209, 102, .8));
+}
+.pin-crown {
+  position: absolute;
+  top: -16px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: var(--gold);
+  filter: drop-shadow(0 0 6px rgba(255, 209, 102, .8))
+          drop-shadow(0 1px 2px rgba(0,0,0,.5));
+  animation: crown-bob 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes crown-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%      { transform: translateX(-50%) translateY(-2px); }
+}
 .pin-label {
   position: absolute;
   top: 36px; left: 50%; transform: translateX(-50%);
@@ -813,6 +1026,11 @@ body {
   .compass { top: 10px; right: 10px; }
   .compass-ring { width: 76px; height: 76px; }
   .compass-arrow svg { width: 50px; height: 50px; }
+  .warmth-banner { top: 10px; left: 10px; }
+  .warmth-banner-inner { padding: 6px 12px 6px 8px; gap: 8px; }
+  .warmth-banner-emoji { font-size: 18px; }
+  .warmth-banner-label { font-size: 14px; }
+  .warmth-banner-distance { font-size: 10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
