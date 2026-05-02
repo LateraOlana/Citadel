@@ -751,7 +751,7 @@
       if (g.distanceKm < 0.5) return "🟩 🎯";
       return `${warmthFor(g.distanceKm).emoji} ${compassArrowFromBearing(g.bearingDeg)}`;
     });
-    return [header, ...lines, "https://citadel.game"].join("\n");
+    return [header, ...lines, "https://lateraolana.github.io/Citadel/"].join("\n");
   }
 
   async function shareResult() {
