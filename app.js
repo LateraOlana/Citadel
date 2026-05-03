@@ -59,6 +59,7 @@
   let citadelMarker = null;
   let connectorPolyline = null;
   let suggestionIdx = -1;
+  let isRestoring = false;  // true while replaying saved guesses on page load
 
   // ---------- Math helpers ----------
   const toRad = d => d * Math.PI / 180;
@@ -209,6 +210,10 @@
   }
   function recordWin(guessCount) {
     const s = loadStats();
+    // Idempotency: if this puzzle was already recorded as won, do nothing.
+    // Without this, every page reload would re-bump played/wins/streak.
+    if (s.lastWinPuzzle === puzzleNum) return s;
+
     s.played += 1;
     s.wins += 1;
     s.totalGuesses += guessCount;
@@ -550,8 +555,8 @@
         if (a.c.isCapital !== b.c.isCapital) return a.c.isCapital ? -1 : 1;
         return a.c.city.localeCompare(b.c.city);
       })
-      .slice(0, 10)
       .map(x => x.c);
+      // No slice — show every match. The dropdown is scrollable.
 
     if (matches.length === 0) {
       box.innerHTML = `<div class="suggestion-empty">No matching city. Try another spelling?</div>`;
@@ -704,9 +709,10 @@
     $("#guess-input").disabled = true;
     $("#guess-btn").disabled = true;
 
-    // Stats: only update for daily mode
+    // Stats: only update for daily mode, and only on the FRESH win (not when
+    // we're replaying saved progress from localStorage on page load).
     let stats = loadStats();
-    if (!isFreePlay) {
+    if (!isFreePlay && !isRestoring) {
       stats = recordWin(guesses.length);
     }
 
@@ -725,10 +731,11 @@
       ? "Want another?"
       : "Come back tomorrow for a new citadel.";
 
+    // On restore, show the modal but skip the confetti shower (already celebrated).
     setTimeout(() => {
       openModal("#win-modal");
-      runConfetti(2200);
-    }, 700);
+      if (!isRestoring) runConfetti(2200);
+    }, isRestoring ? 0 : 700);
   }
 
   function renderShareGrid() {
@@ -751,7 +758,7 @@
       if (g.distanceKm < 0.5) return "🟩 🎯";
       return `${warmthFor(g.distanceKm).emoji} ${compassArrowFromBearing(g.bearingDeg)}`;
     });
-    return [header, ...lines, "https://lateraolana.github.io/Citadel/"].join("\n");
+    return [header, ...lines, "https://citadel.game"].join("\n");
   }
 
   async function shareResult() {
@@ -901,17 +908,22 @@
     // Restore progress if same puzzle was in progress
     const saved = loadProgress();
     if (saved && saved.puzzleNum === puzzleNum && Array.isArray(saved.guesses)) {
-      saved.guesses.forEach(g => {
-        if (typeof g === "string") {
-          submitGuess(g);
-        } else {
-          const exact = capitals.find(c =>
-            normName(c.city) === normName(g.name || "") &&
-            normName(c.country) === normName(g.country || "")
-          );
-          if (exact) submitGuess(null, exact);
-        }
-      });
+      isRestoring = true;
+      try {
+        saved.guesses.forEach(g => {
+          if (typeof g === "string") {
+            submitGuess(g);
+          } else {
+            const exact = capitals.find(c =>
+              normName(c.city) === normName(g.name || "") &&
+              normName(c.country) === normName(g.country || "")
+            );
+            if (exact) submitGuess(null, exact);
+          }
+        });
+      } finally {
+        isRestoring = false;
+      }
     }
 
     renderGuessList();
@@ -1035,11 +1047,22 @@
     });
 
     $("#reset-stats-btn").addEventListener("click", () => {
-      if (confirm("Reset your Citadel stats? This can't be undone.")) {
-        safeStorage.removeItem(STATS_KEY);
-        refreshStatsModal();
-        toast("Stats reset.");
-      }
+      // Close stats modal first, then open the confirmation
+      closeModal("#stats-modal");
+      openModal("#reset-modal");
+    });
+
+    $("#reset-confirm-btn").addEventListener("click", () => {
+      // Full reset: stats, today's progress, and visited-flag stay (so they
+      // don't get the how-to popup again). Then restart today's puzzle so
+      // they can play it from scratch.
+      safeStorage.removeItem(STATS_KEY);
+      safeStorage.removeItem(STORAGE_KEY);
+      closeModal("#reset-modal");
+      // Reset in-memory state and re-init the daily game (same answer city,
+      // empty guess list, fresh stats).
+      startDailyGame();
+      toast("Everything reset. Same puzzle, fresh start.");
     });
   }
 

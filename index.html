@@ -50,7 +50,6 @@
       <div class="brand-text">
         <h1>Citadel</h1>
         <p class="tagline">Find today's hidden city, one guess at a time.</p>
-        <p class="tagline">Slop-coded, by Latera Olana.</p>
       </div>
     </div>
 
@@ -289,7 +288,29 @@
           <span class="stats-lbl">avg</span>
         </div>
       </div>
-      <button class="btn-ghost" id="reset-stats-btn">Reset stats</button>
+      <button class="btn-ghost" id="reset-stats-btn">Reset everything…</button>
+    </div>
+  </div>
+
+  <!-- Reset confirmation modal -->
+  <div class="modal" id="reset-modal" hidden>
+    <div class="modal-scrim" data-close></div>
+    <div class="modal-card reset-card" role="dialog" aria-modal="true" aria-labelledby="reset-title">
+      <button class="icon-btn modal-close" data-close aria-label="Close">
+        <svg viewBox="0 0 20 20" width="18" height="18"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div class="reset-icon" aria-hidden="true">⚠️</div>
+      <h2 id="reset-title">Start fresh?</h2>
+      <p>This will clear:</p>
+      <ul class="reset-list">
+        <li>Your stats — played, wins, streak, best, average</li>
+        <li>Today's progress — your guesses on this puzzle</li>
+      </ul>
+      <p class="reset-note">You'll start over with the same daily puzzle. This can't be undone.</p>
+      <div class="reset-actions">
+        <button class="btn-ghost" data-close>Cancel</button>
+        <button class="btn-danger" id="reset-confirm-btn">Yes, reset everything</button>
+      </div>
     </div>
   </div>
 
