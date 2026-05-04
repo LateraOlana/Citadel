@@ -1034,12 +1034,6 @@
       refreshStatsModal();
       openModal("#stats-modal");
     });
-    $("#mode-btn").addEventListener("click", () => {
-      if (gameOver || guesses.length === 0 || confirm("Abandon current puzzle and start a free-play round?")) {
-        startFreePlay();
-      }
-    });
-
     $("#share-btn").addEventListener("click", shareResult);
     $("#play-again-btn").addEventListener("click", () => {
       closeModal("#win-modal");
