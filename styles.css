@@ -226,9 +226,21 @@ body {
   border-radius: 18px;
   padding: 26px 26px 22px;
   display: flex; flex-direction: column; gap: 18px;
+  /* Isolate from neighboring cards so map repaints don't trigger ours. */
+  contain: layout paint;
+  isolation: isolate;
 }
-.map-card {
+
+/* The map column wraps the HUD bar + the actual map. Stacks vertically. */
+.map-column {
   grid-column: 2; grid-row: 1 / span 2;
+  display: flex; flex-direction: column; gap: 12px;
+  min-height: 560px;
+  height: clamp(560px, 82vh, 880px);
+  isolation: isolate;
+}
+
+.map-card {
   position: relative;
   background: var(--card-bg);
   backdrop-filter: blur(12px);
@@ -236,8 +248,11 @@ body {
   border: 1px solid var(--card-border);
   border-radius: 18px;
   overflow: hidden;
-  min-height: 560px;
-  height: clamp(560px, 82vh, 880px);
+  flex: 1;            /* fill remaining height in the column */
+  min-height: 0;       /* allow flex to shrink */
+  /* Critical: contain the map's own repaints to its box, so the guess-list
+     card and HUD bar don't re-rasterize when the map zooms/pans. */
+  contain: layout paint;
 }
 .guess-list-card {
   grid-column: 1; grid-row: 2;
@@ -251,10 +266,13 @@ body {
      scroll if there are many guesses. */
   max-height: clamp(360px, calc(82vh - 200px), 680px);
   overflow-y: auto;
+  /* Isolate so neighboring map repaints don't cause this column to flicker. */
+  contain: layout paint;
+  isolation: isolate;
 }
 @media (max-width: 900px) {
   .game-card  { grid-column: 1; grid-row: 1; padding: 22px; }
-  .map-card   { grid-column: 1; grid-row: 2; height: 60vh; min-height: 420px; }
+  .map-column { grid-column: 1; grid-row: 2; height: 64vh; min-height: 460px; }
   .guess-list-card { grid-column: 1; grid-row: 3; max-height: none; padding: 20px 22px 22px; }
 }
 
@@ -576,49 +594,51 @@ body {
   transition: color .4s;
 }
 
-/* =================== WARMTH BANNER =================== */
+/* =================== WARMTH BANNER (right side of HUD bar) =================== */
 .warmth-banner {
-  position: absolute;
-  top: 16px; left: 16px;
-  z-index: 10;
-  pointer-events: none;
+  flex: 1;
+  min-width: 0;
   animation: banner-in .4s var(--ease-out-back);
 }
 @keyframes banner-in {
-  from { opacity: 0; transform: translateY(-10px); }
+  from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .warmth-banner-inner {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 14px 8px 10px;
-  background: rgba(20, 32, 74, .85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 18px;
+  height: 100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--card-border);
   border-left: 4px solid var(--warmth, var(--w-cool));
-  border-radius: 12px;
-  box-shadow: 0 8px 30px -8px rgba(0,0,0,.5),
-              0 0 24px var(--warmth-glow, rgba(142,154,175,.3));
+  border-radius: 14px;
+  box-shadow: 0 0 24px var(--warmth-glow, rgba(142,154,175,.25));
   transition: border-color .4s, box-shadow .4s;
 }
 .warmth-banner-emoji {
-  font-size: 22px;
+  font-size: 24px;
   filter: drop-shadow(0 0 6px var(--warmth-glow, rgba(255,209,102,.5)));
+  flex-shrink: 0;
 }
 .warmth-banner-text {
   display: flex; flex-direction: column;
-  line-height: 1.1;
+  line-height: 1.2;
+  min-width: 0;
 }
 .warmth-banner-label {
   font-family: var(--display); font-weight: 700;
-  font-size: 16px;
+  font-size: 17px;
   font-variation-settings: "opsz" 24;
   color: var(--warmth, #fff8e7);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .warmth-banner-distance {
-  font-family: var(--mono); font-size: 11px;
-  color: rgba(255, 248, 231, .85);
+  font-family: var(--mono); font-size: 11.5px;
+  color: rgba(255, 248, 231, .9);
   letter-spacing: .04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
 /* When you find it, the banner becomes a victory celebration */
@@ -630,7 +650,7 @@ body {
 }
 @keyframes banner-win {
   0%, 100% { transform: scale(1); }
-  30% { transform: scale(1.08); }
+  30% { transform: scale(1.04); }
 }
 
 /* =================== GUESS LIST =================== */
@@ -667,49 +687,65 @@ body {
 }
 .leaflet-control-zoom a:hover { background: rgba(255, 209, 102, .25) !important; }
 
+/* =================== HUD BAR (compass + warmth banner, ABOVE the map) =================== */
+.hud-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  /* GPU layer so this never gets re-rasterized when the map repaints. */
+  will-change: transform;
+  transform: translateZ(0);
+  /* Don't be involved in the map's stacking context. */
+  isolation: isolate;
+  flex-shrink: 0;
+}
+.hud-bar[hidden] { display: none; }
+
 /* =================== COMPASS =================== */
 .compass {
-  position: absolute;
-  top: 16px; right: 16px;
-  z-index: 10;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  pointer-events: none;
+  display: flex; flex-direction: row; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  flex-shrink: 0;
 }
 .compass-ring {
   position: relative;
-  width: 88px; height: 88px;
+  width: 56px; height: 56px;
   border-radius: 50%;
-  background: rgba(20, 32, 74, .82);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--card-border);
-  box-shadow: 0 8px 30px -8px rgba(0,0,0,.5);
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .2);
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .cardinal {
   position: absolute;
-  font-family: var(--mono); font-size: 10px;
-  color: rgba(255, 248, 231, .82);
+  font-family: var(--mono); font-size: 8px;
+  color: rgba(255, 248, 231, .7);
   font-weight: 500;
+  letter-spacing: 0;
 }
-.cardinal-n { top: 5px; }
-.cardinal-s { bottom: 5px; }
-.cardinal-e { right: 6px; }
-.cardinal-w { left: 6px; }
+.cardinal-n { top: 3px; }
+.cardinal-s { bottom: 3px; }
+.cardinal-e { right: 4px; }
+.cardinal-w { left: 4px; }
 .compass-arrow {
   transition: transform .8s var(--ease-out-back);
   transform-origin: center;
-  filter: drop-shadow(0 2px 8px rgba(255, 209, 102, .4));
+  filter: drop-shadow(0 2px 4px rgba(255, 209, 102, .4));
+}
+.compass-arrow svg {
+  width: 38px; height: 38px;
 }
 .compass-label {
   font-family: var(--mono); font-size: 11px;
-  background: rgba(20, 32, 74, .85);
   color: var(--gold);
-  padding: 4px 10px;
-  border-radius: 999px;
-  letter-spacing: .1em;
-  border: 1px solid var(--card-border);
+  letter-spacing: .08em;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /* Win pulse on compass when correct */
@@ -917,18 +953,6 @@ body {
   0%   { transform: translateY(-50px) scale(0); opacity: 0; }
   60%  { transform: translateY(8px) scale(1.15); opacity: 1; }
   100% { transform: translateY(0) scale(1); opacity: 1; }
-}
-
-/* When any modal is open, fade map overlays so they don't compete with the modal.
-   The body class is toggled by JS in openModal/closeModal. */
-body.modal-open .compass,
-body.modal-open .warmth-banner {
-  opacity: .15;
-  pointer-events: none;
-  transition: opacity .25s var(--ease);
-}
-.compass, .warmth-banner {
-  transition: opacity .25s var(--ease);
 }
 
 /* =================== MODAL =================== */
@@ -1159,14 +1183,15 @@ body.modal-open .warmth-banner {
   .tagline { display: none; }
   .game-card, .guess-list-card { padding: 16px; }
   #map { border-radius: 16px; }
-  .compass { top: 10px; right: 10px; }
-  .compass-ring { width: 76px; height: 76px; }
-  .compass-arrow svg { width: 50px; height: 50px; }
-  .warmth-banner { top: 10px; left: 10px; }
-  .warmth-banner-inner { padding: 6px 12px 6px 8px; gap: 8px; }
-  .warmth-banner-emoji { font-size: 18px; }
+  .hud-bar { gap: 8px; }
+  .compass { padding: 8px 10px; gap: 8px; }
+  .compass-ring { width: 44px; height: 44px; }
+  .compass-arrow svg { width: 30px; height: 30px; }
+  .compass-label { font-size: 10px; }
+  .warmth-banner-inner { padding: 8px 12px; gap: 10px; }
+  .warmth-banner-emoji { font-size: 20px; }
   .warmth-banner-label { font-size: 14px; }
-  .warmth-banner-distance { font-size: 10px; }
+  .warmth-banner-distance { font-size: 10.5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

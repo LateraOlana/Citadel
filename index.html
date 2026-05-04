@@ -114,42 +114,47 @@
       </div>
     </section>
 
-    <!-- Map -->
-    <section class="map-card" aria-label="Map">
-      <div id="map"></div>
+    <!-- Map column: HUD bar on top, map below -->
+    <section class="map-column" aria-label="Map and direction HUD">
 
-      <!-- Warmth banner (top-left, complements the compass on top-right) -->
-      <div class="warmth-banner" id="warmth-banner" hidden>
-        <div class="warmth-banner-inner">
-          <span class="warmth-banner-emoji" id="warmth-banner-emoji">🟦</span>
-          <div class="warmth-banner-text">
-            <span class="warmth-banner-label" id="warmth-banner-label">Cool</span>
-            <span class="warmth-banner-distance" id="warmth-banner-distance">—</span>
+      <!-- HUD: compass on left, warmth banner with distance on right.
+           Sits ABOVE the map so it's never hidden by zoom/pan repaints. -->
+      <div class="hud-bar" id="hud-bar" hidden>
+        <div class="compass" id="compass">
+          <div class="compass-ring">
+            <span class="cardinal cardinal-n">N</span>
+            <span class="cardinal cardinal-e">E</span>
+            <span class="cardinal cardinal-s">S</span>
+            <span class="cardinal cardinal-w">W</span>
+            <div class="compass-arrow" id="compass-arrow">
+              <svg viewBox="0 0 60 60" width="60" height="60">
+                <path d="M30 6 L42 42 L30 36 L18 42 Z" fill="url(#grad-arrow)" stroke="#fff" stroke-width="1" stroke-linejoin="round"/>
+                <defs>
+                  <linearGradient id="grad-arrow" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#ffd166"/>
+                    <stop offset="100%" stop-color="#ef476f"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+          <div class="compass-label" id="compass-label">—</div>
+        </div>
+
+        <div class="warmth-banner" id="warmth-banner">
+          <div class="warmth-banner-inner">
+            <span class="warmth-banner-emoji" id="warmth-banner-emoji">🟦</span>
+            <div class="warmth-banner-text">
+              <span class="warmth-banner-label" id="warmth-banner-label">Cool</span>
+              <span class="warmth-banner-distance" id="warmth-banner-distance">—</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Compass overlay (only shown after first guess) -->
-      <div class="compass" id="compass" hidden>
-        <div class="compass-ring">
-          <span class="cardinal cardinal-n">N</span>
-          <span class="cardinal cardinal-e">E</span>
-          <span class="cardinal cardinal-s">S</span>
-          <span class="cardinal cardinal-w">W</span>
-          <div class="compass-arrow" id="compass-arrow">
-            <svg viewBox="0 0 60 60" width="60" height="60">
-              <path d="M30 6 L42 42 L30 36 L18 42 Z" fill="url(#grad-arrow)" stroke="#fff" stroke-width="1" stroke-linejoin="round"/>
-              <defs>
-                <linearGradient id="grad-arrow" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stop-color="#ffd166"/>
-                  <stop offset="100%" stop-color="#ef476f"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        </div>
-        <div class="compass-label" id="compass-label">—</div>
-      </div>
+      <section class="map-card" aria-label="Map">
+        <div id="map"></div>
+      </section>
     </section>
 
     <!-- Guess list -->

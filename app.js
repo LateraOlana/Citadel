@@ -392,12 +392,13 @@
   }
 
   function updateProximityHud() {
+    const hud = $("#hud-bar");
     const banner = $("#warmth-banner");
     const pill = $("#closest-pill");
     const prox = $("#proximity");
 
     if (guesses.length === 0) {
-      banner.hidden = true;
+      hud.hidden = true;
       pill.hidden = true;
       prox.hidden = true;
       return;
@@ -407,9 +408,11 @@
     const closest = closestGuess();
     const isWin = last.distanceKm < 0.5;
 
+    // HUD bar (compass + warmth banner together, ABOVE the map)
+    hud.hidden = false;
+
     // Banner — reflects the most recent guess's warmth
     const lastTier = warmthFor(last.distanceKm);
-    banner.hidden = false;
     banner.style.setProperty("--warmth", lastTier.color);
     banner.style.setProperty("--warmth-glow", lastTier.glow);
     banner.classList.toggle("win", isWin);
@@ -455,7 +458,7 @@
   }
 
   function resetProximityHud() {
-    $("#warmth-banner").hidden = true;
+    $("#hud-bar").hidden = true;
     $("#warmth-banner").classList.remove("win");
     $("#closest-pill").hidden = true;
     $("#proximity").hidden = true;
@@ -465,7 +468,7 @@
     const ring = arrow.parentElement;
     arrow.style.transform = `rotate(${deg}deg)`;
     $("#compass-label").textContent = label;
-    $("#compass").hidden = false;
+    // Compass visibility is bound to the hud-bar wrapper now.
     if (isWin) {
       ring.classList.add("win");
       $("#compass-label").textContent = "Found!";
@@ -896,7 +899,6 @@
     gameOver = false;
     guesses = [];
     resetMap();
-    $("#compass").hidden = true;
     document.querySelector(".compass-ring")?.classList.remove("win");
     resetProximityHud();
 
@@ -940,7 +942,6 @@
     gameOver = false;
     guesses = [];
     resetMap();
-    $("#compass").hidden = true;
     document.querySelector(".compass-ring")?.classList.remove("win");
     resetProximityHud();
 
