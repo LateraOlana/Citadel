@@ -226,9 +226,16 @@ body {
   border-radius: 18px;
   padding: 26px 26px 22px;
   display: flex; flex-direction: column; gap: 18px;
-  /* Isolate from neighboring cards so map repaints don't trigger ours. */
-  contain: layout paint;
+  /* contain: layout (without paint) prevents map-zoom flicker without
+     clipping the absolute-positioned suggestion dropdown that hangs below.
+     `paint` containment was clipping suggestions that extended past the
+     card's bottom edge, hiding rows even though the dropdown's own
+     overflow-y: auto would have allowed scrolling. */
+  contain: layout;
   isolation: isolate;
+  /* Allow the absolutely-positioned suggestions dropdown to overflow the
+     card visually. */
+  overflow: visible;
 }
 
 /* The map column wraps the HUD bar + the actual map. Stacks vertically. */
@@ -324,27 +331,38 @@ body {
 .guess-suggestions {
   position: absolute;
   top: calc(100% + 6px); left: 0; right: 0;
-  max-height: min(380px, 50vh);
+  /* Cap at 60vh so it never runs past the viewport, but stay generous on
+     desktop. Always scrollable when results exceed this height. */
+  max-height: min(60vh, 480px);
   overflow-y: auto;
+  /* Stop scroll chaining to the page below (so users can scroll inside the
+     dropdown on touch devices without bouncing the whole page). */
+  overscroll-behavior: contain;
+  /* Smooth iOS momentum scrolling */
+  -webkit-overflow-scrolling: touch;
   background: var(--card-bg-strong);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--card-border);
   border-radius: 12px;
-  z-index: 20;
+  z-index: 30;
   box-shadow: 0 14px 40px -10px rgba(0, 0, 0, .5);
-  /* Subtle scrollbar styling for the suggestion list */
+  /* Visible gold scrollbar so users see the scroll affordance */
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 209, 102, .35) transparent;
+  scrollbar-color: rgba(255, 209, 102, .55) transparent;
 }
-.guess-suggestions::-webkit-scrollbar { width: 8px; }
-.guess-suggestions::-webkit-scrollbar-track { background: transparent; }
+.guess-suggestions::-webkit-scrollbar { width: 10px; }
+.guess-suggestions::-webkit-scrollbar-track { background: transparent; margin: 4px; }
 .guess-suggestions::-webkit-scrollbar-thumb {
-  background: rgba(255, 209, 102, .3);
-  border-radius: 4px;
+  background: rgba(255, 209, 102, .5);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 .guess-suggestions::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 209, 102, .5);
+  background: rgba(255, 209, 102, .75);
+  background-clip: padding-box;
+  border: 2px solid transparent;
 }
 .guess-suggestions[hidden] { display: none; }
 .suggestion {
