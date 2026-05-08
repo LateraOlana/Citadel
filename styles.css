@@ -227,12 +227,16 @@ body {
   padding: 26px 26px 22px;
   display: flex; flex-direction: column; gap: 18px;
   /* contain: layout (without paint) prevents map-zoom flicker without
-     clipping the absolute-positioned suggestion dropdown that hangs below.
-     `paint` containment was clipping suggestions that extended past the
-     card's bottom edge, hiding rows even though the dropdown's own
-     overflow-y: auto would have allowed scrolling. */
+     clipping the absolute-positioned suggestion dropdown that hangs below. */
   contain: layout;
-  isolation: isolate;
+  /* Critical: position + high z-index lifts the entire game-card stacking
+     context above the guess-list-card below. Without this, the
+     guess-list-card's solid background paints over our dropdown overlay
+     because both cards have isolation: isolate which puts them in
+     SEPARATE stacking contexts where z-index between them is meaningless
+     unless their parents have explicit z-index too. */
+  position: relative;
+  z-index: 5;
   /* Allow the absolutely-positioned suggestions dropdown to overflow the
      card visually. */
   overflow: visible;
@@ -273,9 +277,12 @@ body {
      scroll if there are many guesses. */
   max-height: clamp(360px, calc(82vh - 200px), 680px);
   overflow-y: auto;
-  /* Isolate so neighboring map repaints don't cause this column to flicker. */
-  contain: layout paint;
-  isolation: isolate;
+  /* Sit BELOW the game-card so the suggestion dropdown can overlap it. */
+  position: relative;
+  z-index: 1;
+  /* Layout containment is fine; PAINT containment would clip overlays from
+     the game-card above. We removed it. */
+  contain: layout;
 }
 @media (max-width: 900px) {
   .game-card  { grid-column: 1; grid-row: 1; padding: 22px; }
@@ -340,9 +347,9 @@ body {
   overscroll-behavior: contain;
   /* Smooth iOS momentum scrolling */
   -webkit-overflow-scrolling: touch;
-  background: var(--card-bg-strong);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  /* Fully opaque deep-navy: must completely hide whatever it overlaps,
+     including the guess-list-card below. Don't rely on backdrop blur. */
+  background: #1a2454;
   border: 1px solid var(--card-border);
   border-radius: 12px;
   z-index: 30;
