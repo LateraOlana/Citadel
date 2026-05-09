@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lateraolana.github.io/Citadel/sitemap.xml
